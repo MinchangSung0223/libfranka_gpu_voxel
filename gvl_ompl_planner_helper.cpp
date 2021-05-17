@@ -405,10 +405,26 @@ void
 
         pub.publish(output_msg);  
 }*/
+void GvlOmplPlannerHelper::rosPublishJointStates(double *values){
+    
+move_joint_values[0] = values[0];
+move_joint_values[1] = values[1];
+move_joint_values[2] = values[2];
+move_joint_values[3] = values[3];
+move_joint_values[4] = values[4];
+move_joint_values[5] = values[5];
+move_joint_values[6] = values[6];
+
+
+}
+
+
 void GvlOmplPlannerHelper::rosPublishJointTrajectory(std::vector<std::array<double,7>>& q_list){
         pub_q_list.clear();
         for(int i =0;i<q_list.size();i++){
-                pub_q_list.push_back(q_list.at(i));
+                std::array<double,7> temp_q = q_list.at(i);
+                temp_q[6] =temp_q[6]-1.570796/2; 
+                pub_q_list.push_back(temp_q);
         }
         pub_trig = 1;
 }
@@ -496,7 +512,7 @@ signal(SIGINT, ctrlchandler);
 std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("points-topic", "/point_cloud2");
   ros::Subscriber sub = nh.subscribe<pcl::PointCloud<pcl::PointXYZ> >(point_cloud_topic, 1,roscallback);
    ros::Publisher pub = nh.advertise<trajectory_msgs::JointTrajectory>("joint_trajectory", 1000);
-   //ros::Publisher pub2 =  nh.advertise<sensor_msgs::JointState>("joint_states_desired", 1000);
+   ros::Publisher pub2 =  nh.advertise<sensor_msgs::JointState>("joint_states", 1000);
 
   ros::Rate r(30);
   size_t iteration = 0;
@@ -512,6 +528,22 @@ std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("
       r.sleep();
 
   }
+ 
+sensor_msgs::JointState jointState;
+jointState.name.push_back("panda_joint1");
+jointState.name.push_back("panda_joint2");
+jointState.name.push_back("panda_joint3");
+jointState.name.push_back("panda_joint4");
+jointState.name.push_back("panda_joint5");
+jointState.name.push_back("panda_joint6");
+jointState.name.push_back("panda_joint7");
+jointState.position.push_back(0.0);
+jointState.position.push_back(0.0);
+jointState.position.push_back(0.0);
+jointState.position.push_back(0.0);
+jointState.position.push_back(0.0);
+jointState.position.push_back(0.0);
+jointState.position.push_back(0.0);
 
 
 
@@ -562,6 +594,22 @@ std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("
                 pub_q_list.clear();
                 pub_trig=0;
                 }
+            
+                jointState.header.stamp = ros::Time::now();
+        jointState.position[0] = move_joint_values[0];
+        jointState.position[1] = move_joint_values[1];
+        jointState.position[2] = move_joint_values[2];
+        jointState.position[3] = move_joint_values[3];
+        jointState.position[4] = move_joint_values[4];
+        jointState.position[5] = move_joint_values[5];
+        jointState.position[6] = move_joint_values[6];
+
+        
+
+        pub2.publish(jointState);
+
+
+     
 
 
      
