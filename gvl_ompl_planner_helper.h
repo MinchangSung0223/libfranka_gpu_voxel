@@ -72,7 +72,7 @@ public:
     void plan();
     void rosIter();
     void rosPublishJointTrajectory(std::vector<std::array<double,7>>& q_list);
-
+    void rosPublishJointStates(double *values);
    
     std::shared_ptr<GvlOmplPlannerHelper> getptr() {
         return shared_from_this();
