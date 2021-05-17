@@ -119,13 +119,13 @@ void doTaskPlanning(double* goal_values){
 
     double start_values[7];
     my_class_ptr->getJointStates(start_values);
-    q_init(0) = start_values[0];//0;
-    q_init(1) = start_values[1];// -0.7850857777;
-    q_init(2) =  start_values[2];//0;
-    q_init(3) =  start_values[3];//-2.3555949;
-    q_init(4) =  start_values[4];//0;
-    q_init(5) =  start_values[5];//1.57091693296;
-    q_init(6) =  start_values[6];//1.57091693296;
+    q_init(0) = 0;
+    q_init(1) =  -0.7850857777;
+    q_init(2) = 0;
+    q_init(3) = -2.3555949;
+    q_init(4) = 0;
+    q_init(5) = 1.57091693296;
+    q_init(6) = 1.57091693296;
     KDL::JntArray q_min(my_chain.getNrOfJoints()),q_max(my_chain.getNrOfJoints());
     q_min(0) = -2.8973;
     q_min(1) = -1.7628;
@@ -239,9 +239,11 @@ void doTaskPlanning(double* goal_values){
         double *temp_values = (double*)values;
         std::array<double,7> temp_joints_value={{temp_values[0],temp_values[1],temp_values[2],temp_values[3],temp_values[4],temp_values[5],temp_values[6]}};
         q_list.push_back(temp_joints_value);
-        my_class_ptr->rosPublishJointTrajectory(q_list);
+        my_class_ptr->rosPublishJointStates(temp_values);
+    	my_class_ptr->visualizeRobot(values);
 	
      }
+    my_class_ptr->rosPublishJointTrajectory(q_list);
     q_list.clear();
 
 }
@@ -312,11 +314,9 @@ signal(SIGINT, ctrlchandler);
    int toggle = 1;
 
 
-	double task_goal_values00[6] ={0.0, PI, 0,0.45,0.0,0.415};
+	double task_goal_values00[6] ={0.0, PI, 0,0.454,0.00,0.59032};
        doTaskPlanning(task_goal_values00);
 
-	double task_goal_values01[6] ={0.0, PI, 0,0.60,0.3,0.415};
-        doTaskPlanning(task_goal_values01);
         
 
 	cout<<"END second Task"<<endl;
