@@ -495,8 +495,8 @@ signal(SIGINT, ctrlchandler);
   ros::Subscriber sub1 = nh.subscribe("joint_states", 1, rosjointStateCallback); 
 std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("points-topic", "/point_cloud2");
   ros::Subscriber sub = nh.subscribe<pcl::PointCloud<pcl::PointXYZ> >(point_cloud_topic, 1,roscallback);
-   ros::Publisher pub =  nh.advertise<sensor_msgs::JointState>("joint_states", 1000);
-   ros::Publisher pub2 =  nh.advertise<sensor_msgs::JointState>("joint_states_desired", 1000);
+   ros::Publisher pub = nh.advertise<trajectory_msgs::JointTrajectory>("joint_trajectory", 1000);
+   //ros::Publisher pub2 =  nh.advertise<sensor_msgs::JointState>("joint_states_desired", 1000);
 
   ros::Rate r(30);
   size_t iteration = 0;
