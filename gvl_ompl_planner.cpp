@@ -312,25 +312,12 @@ signal(SIGINT, ctrlchandler);
    int toggle = 1;
 
 
-	double task_goal_values00[6] ={0.0, PI, 0,0.454,-0.06,0.415};
+	double task_goal_values00[6] ={0.0, PI, 0,0.45,0.0,0.415};
        doTaskPlanning(task_goal_values00);
 
-	double task_goal_values01[6] ={0.0, PI, 0,0.23,0.3,0.18};
+	double task_goal_values01[6] ={0.0, PI, 0,0.60,0.3,0.415};
         doTaskPlanning(task_goal_values01);
         
-        doTaskPlanning(task_goal_values00);
-
-	double task_goal_values02[6] ={0.0, PI, 0,0.23,-0.3,0.415};
-       doTaskPlanning(task_goal_values02);
-
-        doTaskPlanning(task_goal_values00);
-
-	double task_goal_values03[6] ={PI, PI/2, PI,0.8,0.0,0.50558};
-	doTaskPlanning(task_goal_values03);
-
-
-	doTaskPlanning(task_goal_values00);
-
 
 	cout<<"END second Task"<<endl;
 
@@ -340,5 +327,4 @@ signal(SIGINT, ctrlchandler);
     t3.join();
     return 1;
 }
-
 
