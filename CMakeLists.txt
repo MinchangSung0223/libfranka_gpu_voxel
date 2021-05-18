@@ -137,4 +137,3 @@ target_link_libraries (gvl_ompl_planner
 target_include_directories(gvl_ompl_planner
      PUBLIC ${orocos_kdl_INCLUDE_DIRS} # this should be removed in upcoming versions.
 )
-
