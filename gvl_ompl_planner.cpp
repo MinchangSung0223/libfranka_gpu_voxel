@@ -315,9 +315,12 @@ signal(SIGINT, ctrlchandler);
    int toggle = 1;
 
 
-	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.454,0.30,0.59032};
+	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.554,0.30,0.49032};
        doTaskPlanning(task_goal_values00);
-        
+	double task_goal_values11[7] ={0.92395,-0.38252,0,0,0.554,-0.30,0.49032};
+       doTaskPlanning(task_goal_values11);  
+       doTaskPlanning(task_goal_values00); 
+       doTaskPlanning(task_goal_values11);       
 
 	cout<<"END second Task"<<endl;
 
