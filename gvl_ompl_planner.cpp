@@ -66,7 +66,7 @@ namespace og = ompl::geometric;
 #define R2D 180.0/3.141592
 using namespace KDL;
 using namespace std;
-
+// initial quaternion 0.49996,0.86605,0.00010683,0
 
 
 
@@ -153,7 +153,8 @@ void doTaskPlanning(double* goal_values){
     KDL::ChainIkSolverPos_NR_JL iksolver1(my_chain,q_min,q_max,fk_solver,iksolver1v,2000,0.01);
   	KDL::Vector pos = KDL::Vector(0.05,-0.1865,1.20);
   	
-    KDL::Frame goal_pose( KDL::Rotation::RPY(goal_values[0],goal_values[1],goal_values[2]),KDL::Vector(goal_values[3],goal_values[4],goal_values[5]));
+    //KDL::Frame goal_pose( KDL::Rotation::RPY(goal_values[0],goal_values[1],goal_values[2]),KDL::Vector(goal_values[3],goal_values[4],goal_values[5]));
+    KDL::Frame goal_pose( KDL::Rotation::Quaternion(goal_values[0],goal_values[1],goal_values[2],goal_values[3]),KDL::Vector(goal_values[4],goal_values[5],goal_values[6]));
 
     bool ret = iksolver1.CartToJnt(q_init,goal_pose,q1);
     std::cout<<"ik ret : "<<ret<<std::endl;
@@ -314,9 +315,8 @@ signal(SIGINT, ctrlchandler);
    int toggle = 1;
 
 
-	double task_goal_values00[6] ={0.0, PI, 0,0.454,0.00,0.59032};
+	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.454,0.30,0.59032};
        doTaskPlanning(task_goal_values00);
-
         
 
 	cout<<"END second Task"<<endl;
@@ -327,4 +327,3 @@ signal(SIGINT, ctrlchandler);
     t3.join();
     return 1;
 }
-
