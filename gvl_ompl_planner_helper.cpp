@@ -423,7 +423,7 @@ void GvlOmplPlannerHelper::rosPublishJointTrajectory(std::vector<std::array<doub
         pub_q_list.clear();
         for(int i =0;i<q_list.size();i++){
                 std::array<double,7> temp_q = q_list.at(i);
-                temp_q[6] =temp_q[6]-1.570796/2-3.141592/2; 
+                temp_q[6] =temp_q[6]-1.570796/2; 
                 pub_q_list.push_back(temp_q);
         }
         pub_trig = 1;
