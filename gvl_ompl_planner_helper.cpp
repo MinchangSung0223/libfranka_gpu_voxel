@@ -639,8 +639,6 @@ jointState.position.push_back(0.0);
 
         
 
-        pub2.publish(jointState);
-
 
      
 
