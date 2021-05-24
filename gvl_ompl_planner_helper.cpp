@@ -59,7 +59,12 @@ std::vector<std::array<double,7>> pub_q_list;
 int pub_trig= 0;
 double joint_states[7] = {0,0,0,0,0,0,0};
 double move_joint_values[7] = {-PI/8,-0.785085,0.0,-2.3555949,0.0,1.570,0};
-
+float roll = 0.0f;
+float pitch = 0.0f;
+float yaw = 0.0f;
+float X = 0.0f;
+float Y = 0.0f;
+float Z = 0.0f;
 void rosjointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 {
   //std::cout << "Got JointStateMessage" << std::endl;
@@ -184,6 +189,15 @@ void GvlOmplPlannerHelper::doVis()
     gvl->visualizeMap("myQueryMap");
         gvl->clearMap("myRobotMap");
     gvl->visualizeMap("myRobotMap2");
+}
+void GvlOmplPlannerHelper::setParams(float roll_,float pitch_,float yaw_,float X_,float Y_,float Z_)
+{
+              roll = roll_;
+                yaw = yaw_;
+                pitch = pitch_;
+                X = X_;
+                Y= Y_;
+                Z = Z_;
 }
 void GvlOmplPlannerHelper::getJointStates(double* return_values)
 {       
@@ -481,12 +495,7 @@ signal(SIGINT, ctrlchandler);
   //const Vector3f camera_offsets(2, 0, 1); // camera located at y=0, x_max/2, z_max/2
     // camera located at y=-0.2m, x_max/2, z_max/2
 
-  float roll = icl_core::config::paramOptDefault<float>("roll", 0.0f) * 3.141592f / 180.0f;
-  float pitch = icl_core::config::paramOptDefault<float>("pitch", 0.0f) * 3.141592f / 180.0f;
-  float yaw = icl_core::config::paramOptDefault<float>("yaw", 0.0f) * 3.141592f / 180.0f;
-  float X = icl_core::config::paramOptDefault<float>("X", 0.0f);
-  float Y = icl_core::config::paramOptDefault<float>("Y", 0.0f);
-  float Z = icl_core::config::paramOptDefault<float>("Z", 0.0f);
+
   const Vector3f camera_offsets(X,Y,Z);
   tf = Matrix4f::createFromRotationAndTranslation(Matrix3f::createFromRPY(0+ roll, 0+pitch, 0+  yaw), camera_offsets);
 
