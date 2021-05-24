@@ -265,8 +265,6 @@ signal(SIGINT, ctrlchandler);
 
     icl_core::logging::initialize(argc, argv);
 
-
-
     PERF_MON_INITIALIZE(100, 1000);
     PERF_MON_ENABLE("planning");
 
@@ -304,6 +302,15 @@ signal(SIGINT, ctrlchandler);
     //Set the state validity checker
     std::shared_ptr<GvlOmplPlannerHelper> my_class_ptr(std::make_shared<GvlOmplPlannerHelper>(si));
     my_class_ptr->doVis();
+    float roll = atof(argv[1]);
+    float pitch = atof(argv[2]);
+    float yaw = atof(argv[3]);
+    float X = atof(argv[4]);
+    float Y = atof(argv[5]);
+    float Z = atof(argv[6]);
+    
+
+    my_class_ptr->setParams(roll,pitch,yaw,X,Y,Z);
     thread t1{&GvlOmplPlannerHelper::rosIter ,my_class_ptr};    
     //thread t2(jointStateCallback);
     thread t3(doVis);
