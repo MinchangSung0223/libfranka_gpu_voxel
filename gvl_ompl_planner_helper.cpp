@@ -81,6 +81,7 @@ void
 roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
 {
   static float x(0.0);
+  
   //gvl->clearMap("myEnvironmentMap");
   
   std::vector<Vector3f> point_data;
@@ -101,7 +102,7 @@ roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
   
   new_data_received = true;
 
-  ////LOGGING_INFO(Gpu_voxels, "DistanceROSDemo camera callback. PointCloud size: " << msg->points.size() << endl);
+  LOGGING_INFO(Gpu_voxels, "DistanceROSDemo camera callback. PointCloud size: " << msg->points.size() << endl);
   
 }
 
@@ -509,7 +510,7 @@ signal(SIGINT, ctrlchandler);
   ros::NodeHandle nh;
 
   ros::Subscriber sub1 = nh.subscribe("joint_states", 1, rosjointStateCallback); 
-std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("points-topic", "/point_cloud2");
+std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("points-topic", "/camera/depth/color/points");
   ros::Subscriber sub = nh.subscribe<pcl::PointCloud<pcl::PointXYZ> >(point_cloud_topic, 1,roscallback);
    ros::Publisher pub = nh.advertise<trajectory_msgs::JointTrajectory>("joint_trajectory", 1000);
    ros::Publisher pub2 =  nh.advertise<sensor_msgs::JointState>("joint_states", 1000);
@@ -550,7 +551,11 @@ jointState.position.push_back(0.0);
   while (ros::ok())
   {
     ros::spinOnce();
-
+    gvl->clearMap("myEnvironmentMap");
+	countingVoxelList->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
+        erodeTempVoxmap1->merge(countingVoxelList);
+  	erodeTempVoxmap1->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
+        gvl->visualizeMap("myEnvironmentMap");
 
                if(pub_trig==1){
                 trajectory_msgs::JointTrajectory jointTrajectory;
