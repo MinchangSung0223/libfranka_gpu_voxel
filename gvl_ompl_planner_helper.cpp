@@ -445,6 +445,13 @@ signal(SIGINT, ctrlchandler);
                                                     "Camera pitch in degrees");
   icl_core::config::GetoptParameter yaw_parameter   ("yaw:", "y",
                                                     "Camera yaw in degrees");
+  icl_core::config::GetoptParameter X_parameter   ("X:", "X",
+                                                    "Camera yaw in degrees");
+  icl_core::config::GetoptParameter Y_parameter   ("Y:", "Y",
+                                                    "Camera yaw in degrees");
+  icl_core::config::GetoptParameter Z_parameter   ("X:", "Z",
+                                                    "Camera yaw in degrees");
+
   icl_core::config::GetoptParameter voxel_side_length_parameter("voxel_side_length:", "s",
                                                                 "Side length of a voxel, default 0.01");
   icl_core::config::GetoptParameter filter_threshold_parameter ("filter_threshold:", "f",
@@ -455,6 +462,14 @@ signal(SIGINT, ctrlchandler);
   icl_core::config::addParameter(roll_parameter);
   icl_core::config::addParameter(pitch_parameter);
   icl_core::config::addParameter(yaw_parameter);
+
+  icl_core::config::addParameter(X_parameter);
+
+  icl_core::config::addParameter(Y_parameter);
+
+  icl_core::config::addParameter(Z_parameter);
+
+
   icl_core::config::addParameter(voxel_side_length_parameter);
   icl_core::config::addParameter(filter_threshold_parameter);
   icl_core::config::addParameter(erode_threshold_parameter);
@@ -464,11 +479,15 @@ signal(SIGINT, ctrlchandler);
   // setup "tf" to transform from camera to world / gpu-voxels coordinates
 
   //const Vector3f camera_offsets(2, 0, 1); // camera located at y=0, x_max/2, z_max/2
-  const Vector3f camera_offsets(1.0f,1.0f,0.84f);  // camera located at y=-0.2m, x_max/2, z_max/2
+    // camera located at y=-0.2m, x_max/2, z_max/2
 
   float roll = icl_core::config::paramOptDefault<float>("roll", 0.0f) * 3.141592f / 180.0f;
   float pitch = icl_core::config::paramOptDefault<float>("pitch", 0.0f) * 3.141592f / 180.0f;
   float yaw = icl_core::config::paramOptDefault<float>("yaw", 0.0f) * 3.141592f / 180.0f;
+  float X = icl_core::config::paramOptDefault<float>("X", 0.0f);
+  float Y = icl_core::config::paramOptDefault<float>("Y", 0.0f);
+  float Z = icl_core::config::paramOptDefault<float>("Z", 0.0f);
+  const Vector3f camera_offsets(X,Y,Z);
   tf = Matrix4f::createFromRotationAndTranslation(Matrix3f::createFromRPY(0+ roll, 0+pitch, 0+  yaw), camera_offsets);
 
   
