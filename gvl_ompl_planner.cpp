@@ -119,13 +119,13 @@ void doTaskPlanning(double* goal_values){
 
     double start_values[7];
     my_class_ptr->getJointStates(start_values);
-    q_init(0) = 0;
-    q_init(1) =  -0.7850857777;
-    q_init(2) = 0;
-    q_init(3) = -2.3555949;
-    q_init(4) = 0;
-    q_init(5) = 1.57091693296;
-    q_init(6) = 1.57091693296;
+    q_init(0) = start_values[0];
+    q_init(1) = start_values[1];
+    q_init(2) = start_values[2];
+    q_init(3) = start_values[3];
+    q_init(4) = start_values[4];
+    q_init(5) = start_values[5];
+    q_init(6) = start_values[6];
     KDL::JntArray q_min(my_chain.getNrOfJoints()),q_max(my_chain.getNrOfJoints());
     q_min(0) = -2.8973;
     q_min(1) = -1.7628;
@@ -183,7 +183,7 @@ void doTaskPlanning(double* goal_values){
 
 	my_class_ptr->insertStartAndGoal(start, goal);
     my_class_ptr->doVis();
-
+    my_class_ptr->isMove(1);
     auto pdef(std::make_shared<ob::ProblemDefinition>(si));
     pdef->setStartAndGoalStates(start, goal);
     auto planner(std::make_shared<og::LBKPIECE1>(si));
@@ -244,8 +244,26 @@ void doTaskPlanning(double* goal_values){
     	my_class_ptr->visualizeRobot(values);
 	
      }
+
     my_class_ptr->rosPublishJointTrajectory(q_list);
+        double err=10000;
+     while(1){
+          double temp_err=0;
+          double start_values[7];
+          my_class_ptr->getJointStates(start_values);
+          std::array<double,7> temp =  q_list.at(q_list.size()-1);
+          for(int j =0;j<7;j++)
+                temp_err += abs(start_values[j]-temp[j]);
+          err =temp_err;
+                
+          sleep(10);
+          if(err<1){
+                break;
+          }
+          std:cout<<"ERROR VALUE : "<<err<<std::endl;
+        }
     q_list.clear();
+    my_class_ptr->isMove(0);
 
 }
 
@@ -322,14 +340,24 @@ signal(SIGINT, ctrlchandler);
    int toggle = 1;
 
 
-	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.554,0.30,0.49032};
+        while(1){
+        int continue_value=0;
+        std::cin >> continue_value;
+        if (continue_value != 0){
+                killhandler(1);
+                ctrlchandler(1);
+            break;
+                }       
+	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.64,0.40,0.19032};
        doTaskPlanning(task_goal_values00);
-	double task_goal_values11[7] ={0.92395,-0.38252,0,0,0.554,-0.30,0.49032};
+       
+       double task_goal_values11[7] ={0.92395,-0.38252,0,0,0.64,-0.40,0.19032};
        doTaskPlanning(task_goal_values11);  
-       doTaskPlanning(task_goal_values00); 
-       doTaskPlanning(task_goal_values11);       
+       doTaskPlanning(task_goal_values00);
+       double task_goal_values12[7] ={0.92395,-0.38252,0,0,0.3,0,0.59027};
+       doTaskPlanning(task_goal_values12);  
+        }
 
-	cout<<"END second Task"<<endl;
 
 //----------------------------------------------------//
     t1.join();
