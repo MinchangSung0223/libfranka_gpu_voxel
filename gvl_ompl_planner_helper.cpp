@@ -65,6 +65,7 @@ float yaw = 0.0f;
 float X = 0.0f;
 float Y = 0.0f;
 float Z = 0.0f;
+int is_move=0;
 void rosjointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 {
   //std::cout << "Got JointStateMessage" << std::endl;
@@ -85,6 +86,7 @@ void rosjointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 void 
 roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
 {
+
   static float x(0.0);
   
   //gvl->clearMap("myEnvironmentMap");
@@ -100,14 +102,17 @@ roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
   }
 
   //my_point_cloud.add(point_data);
-  my_point_cloud.update(point_data);
+  if(is_move ==0){
+          my_point_cloud.update(point_data);
 
-  // transform new pointcloud to world coordinates
-  my_point_cloud.transformSelf(&tf);
-  
-  new_data_received = true;
+          // transform new pointcloud to world coordinates
+          my_point_cloud.transformSelf(&tf);
+          
+          new_data_received = true;
 
-  LOGGING_INFO(Gpu_voxels, "DistanceROSDemo camera callback. PointCloud size: " << msg->points.size() << endl);
+          LOGGING_INFO(Gpu_voxels, "DistanceROSDemo camera callback. PointCloud size: " << msg->points.size() << endl);
+  }
+
   
 }
 
@@ -189,6 +194,11 @@ void GvlOmplPlannerHelper::doVis()
     gvl->visualizeMap("myQueryMap");
         gvl->clearMap("myRobotMap");
     gvl->visualizeMap("myRobotMap2");
+}
+
+void GvlOmplPlannerHelper::isMove(int i)
+{
+        is_move = i;
 }
 void GvlOmplPlannerHelper::setParams(float roll_,float pitch_,float yaw_,float X_,float Y_,float Z_)
 {
@@ -438,7 +448,7 @@ void GvlOmplPlannerHelper::rosPublishJointTrajectory(std::vector<std::array<doub
         pub_q_list.clear();
         for(int i =0;i<q_list.size();i++){
                 std::array<double,7> temp_q = q_list.at(i);
-                temp_q[6] =temp_q[6]; 
+                temp_q[6] =temp_q[6]+PI/4; 
                 pub_q_list.push_back(temp_q);
         }
         pub_trig = 1;
