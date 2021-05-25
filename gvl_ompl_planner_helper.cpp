@@ -103,6 +103,7 @@ roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
 
   //my_point_cloud.add(point_data);
   if(is_move ==0){
+    gvl->clearMap("myEnvironmentMap");
           my_point_cloud.update(point_data);
 
           // transform new pointcloud to world coordinates
@@ -111,9 +112,11 @@ roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
           new_data_received = true;
 
           LOGGING_INFO(Gpu_voxels, "DistanceROSDemo camera callback. PointCloud size: " << msg->points.size() << endl);
+  gvl->visualizeMap("myEnvironmentMap");
   }
-
   
+
+    gvl->visualizeMap("myRobotMap2");
 }
 
 
@@ -138,6 +141,9 @@ GvlOmplPlannerHelper::GvlOmplPlannerHelper(const ob::SpaceInformationPtr &si)
     gvl->addMap(MT_PROBAB_VOXELMAP,"myRobotMap");
     gvl->addMap(MT_BITVECTOR_VOXELLIST,"myRobotMap2");
     //gvl->addMap(MT_BITVECTOR_OCTREE, "myEnvironmentMap");
+    gvl->addMap(MT_BITVECTOR_VOXELLIST, "myTableMap");
+    gvl->insertPointCloudFromFile("myTableMap", "table.binvox", true,
+                                      gpu_voxels::eBVM_OCCUPIED, true, gpu_voxels::Vector3f(0.85, 0.5, 0.0),1);
 
     gvl->addMap(MT_BITVECTOR_VOXELLIST,"mySolutionMap");
     gvl->addMap(MT_PROBAB_VOXELMAP,"myQueryMap");
@@ -186,7 +192,7 @@ void GvlOmplPlannerHelper::doVis()
 
     // tell the visualier that the map has changed:
 
-    gvl->visualizeMap("myRobotMap");
+    //gvl->visualizeMap("myRobotMap");
     gvl->visualizeMap("myEnvironmentMap");
 
     gvl->visualizeMap("countingVoxelList");
@@ -194,6 +200,8 @@ void GvlOmplPlannerHelper::doVis()
     gvl->visualizeMap("myQueryMap");
         gvl->clearMap("myRobotMap");
     gvl->visualizeMap("myRobotMap2");
+    gvl->visualizeMap("myTableMap");
+
 }
 
 void GvlOmplPlannerHelper::isMove(int i)
@@ -270,10 +278,8 @@ void GvlOmplPlannerHelper::visualizeRobot(const double *values)
         // update the robot joints:
         gvl->setRobotConfiguration("myUrdfRobot", state_joint_values);
         // insert the robot into the map:
-       gvl->insertRobotIntoMap("myUrdfRobot", "myRobotMap", eBVM_OCCUPIED);
        gvl->insertRobotIntoMap("myUrdfRobot", "myRobotMap2",BitVoxelMeaning(eBVM_SWEPT_VOLUME_START+180));
 
-        gvl->clearMap("myRobotMap");
     gvl->visualizeMap("myRobotMap2");
 
 }
@@ -564,6 +570,7 @@ std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("
     erodeTempVoxmap1->merge(countingVoxelList);
   	erodeTempVoxmap1->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
   gvl->visualizeMap("myEnvironmentMap");
+
       r.sleep();
 
   }
@@ -589,7 +596,6 @@ jointState.position.push_back(0.0);
   while (ros::ok())
   {
     ros::spinOnce();
-    gvl->clearMap("myEnvironmentMap");
 	countingVoxelList->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
         erodeTempVoxmap1->merge(countingVoxelList);
   	erodeTempVoxmap1->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
@@ -669,8 +675,7 @@ jointState.position.push_back(0.0);
 
       
     }
- gvl->insertPointCloudFromFile("myEnvironmentMap", "table.binvox", true,
-                                      gpu_voxels::eBVM_OCCUPIED, true, gpu_voxels::Vector3f(0.85, 0.5, 0.0),1);
+ 
     r.sleep();
   }
 
