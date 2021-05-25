@@ -183,7 +183,7 @@ void doTaskPlanning(double* goal_values){
 
 	my_class_ptr->insertStartAndGoal(start, goal);
     my_class_ptr->doVis();
-    my_class_ptr->isMove(1);
+
     auto pdef(std::make_shared<ob::ProblemDefinition>(si));
     pdef->setStartAndGoalStates(start, goal);
     auto planner(std::make_shared<og::LBKPIECE1>(si));
@@ -191,7 +191,7 @@ void doTaskPlanning(double* goal_values){
     planner->setup();
 
     int succs = 0;
-
+    system("cls");
     std::cout << "Waiting for Viz. Press Key if ready!" << std::endl;
     ob::PathPtr path ;
      while(succs<1)
@@ -263,7 +263,7 @@ void doTaskPlanning(double* goal_values){
           std:cout<<"ERROR VALUE : "<<err<<std::endl;
         }
     q_list.clear();
-    my_class_ptr->isMove(0);
+
 
 }
 
@@ -346,8 +346,9 @@ signal(SIGINT, ctrlchandler);
         if (continue_value != 0){
                 killhandler(1);
                 ctrlchandler(1);
-            break;
+                break;
                 }       
+      my_class_ptr->isMove(1);
 	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.64,0.40,0.19032};
        doTaskPlanning(task_goal_values00);
        
@@ -356,6 +357,7 @@ signal(SIGINT, ctrlchandler);
        doTaskPlanning(task_goal_values00);
        double task_goal_values12[7] ={0.92395,-0.38252,0,0,0.3,0,0.59027};
        doTaskPlanning(task_goal_values12);  
+    my_class_ptr->isMove(0);
         }
 
 
