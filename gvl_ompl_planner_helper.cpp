@@ -112,6 +112,9 @@ roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
           new_data_received = true;
 
           LOGGING_INFO(Gpu_voxels, "DistanceROSDemo camera callback. PointCloud size: " << msg->points.size() << endl);
+gvl->insertPointCloudFromFile("myEnvironmentMap", "table.binvox", true,
+                                      gpu_voxels::eBVM_OCCUPIED, true, gpu_voxels::Vector3f(0.85, 0.5, 0.0),1);
+
   gvl->visualizeMap("myEnvironmentMap");
   }
   
