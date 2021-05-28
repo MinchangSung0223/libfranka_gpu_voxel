@@ -1,2 +1,2 @@
 - setup-file:
-    local-name: /root/workspace/gpu_voxel_panda_sim/devel/setup.sh
+    local-name: /root/workspace/libfranka_gpu_voxel/devel/setup.sh

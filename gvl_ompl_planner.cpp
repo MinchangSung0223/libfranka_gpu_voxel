@@ -349,10 +349,10 @@ signal(SIGINT, ctrlchandler);
                 break;
                 }       
       my_class_ptr->isMove(1);
-	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.64,0.40,0.19032};
+	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.58,0.40,0.3};
        doTaskPlanning(task_goal_values00);
        
-       double task_goal_values11[7] ={0.92395,-0.38252,0,0,0.64,-0.40,0.19032};
+       double task_goal_values11[7] ={0.92395,-0.38252,0,0,0.58,-0.40,0.3};
        doTaskPlanning(task_goal_values11);  
        doTaskPlanning(task_goal_values00);
        double task_goal_values12[7] ={0.92395,-0.38252,0,0,0.3,0,0.59027};

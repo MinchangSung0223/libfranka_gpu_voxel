@@ -66,8 +66,10 @@ float X = 0.0f;
 float Y = 0.0f;
 float Z = 0.0f;
 int is_move=0;
+int move_done = 0;
 void rosjointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 {
+  move_done = 1;
   //std::cout << "Got JointStateMessage" << std::endl;
   gvl->clearMap("myRobotMap");
 
@@ -86,7 +88,7 @@ void rosjointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 void 
 roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
 {
-
+  move_done = 0;
   static float x(0.0);
   
   //gvl->clearMap("myEnvironmentMap");
@@ -210,6 +212,10 @@ void GvlOmplPlannerHelper::doVis()
 void GvlOmplPlannerHelper::isMove(int i)
 {
         is_move = i;
+}
+int GvlOmplPlannerHelper::getMoveDone()
+{
+        return move_done;
 }
 void GvlOmplPlannerHelper::setParams(float roll_,float pitch_,float yaw_,float X_,float Y_,float Z_)
 {
@@ -599,6 +605,7 @@ jointState.position.push_back(0.0);
   while (ros::ok())
   {
     ros::spinOnce();
+        move_done=0;
 	countingVoxelList->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
         erodeTempVoxmap1->merge(countingVoxelList);
   	erodeTempVoxmap1->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);

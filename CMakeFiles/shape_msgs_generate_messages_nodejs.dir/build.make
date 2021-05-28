@@ -62,10 +62,10 @@ RM = /usr/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /root/workspace/gpu_voxel_panda_sim
+CMAKE_SOURCE_DIR = /root/workspace/libfranka_gpu_voxel
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /root/workspace/gpu_voxel_panda_sim
+CMAKE_BINARY_DIR = /root/workspace/libfranka_gpu_voxel
 
 # Utility rule file for shape_msgs_generate_messages_nodejs.
 
@@ -86,6 +86,6 @@ CMakeFiles/shape_msgs_generate_messages_nodejs.dir/clean:
 .PHONY : CMakeFiles/shape_msgs_generate_messages_nodejs.dir/clean
 
 CMakeFiles/shape_msgs_generate_messages_nodejs.dir/depend:
-	cd /root/workspace/gpu_voxel_panda_sim && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/workspace/gpu_voxel_panda_sim /root/workspace/gpu_voxel_panda_sim /root/workspace/gpu_voxel_panda_sim /root/workspace/gpu_voxel_panda_sim /root/workspace/gpu_voxel_panda_sim/CMakeFiles/shape_msgs_generate_messages_nodejs.dir/DependInfo.cmake --color=$(COLOR)
+	cd /root/workspace/libfranka_gpu_voxel && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/workspace/libfranka_gpu_voxel /root/workspace/libfranka_gpu_voxel /root/workspace/libfranka_gpu_voxel /root/workspace/libfranka_gpu_voxel /root/workspace/libfranka_gpu_voxel/CMakeFiles/shape_msgs_generate_messages_nodejs.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/shape_msgs_generate_messages_nodejs.dir/depend
 

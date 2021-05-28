@@ -3848,7 +3848,7 @@ icl_core/TimeStamp.h
 icl_core_logging/Logging.h
 -
 
-/root/workspace/gpu_voxel_panda_sim/gvl_ompl_planner.cpp
+/root/workspace/libfranka_gpu_voxel/gvl_ompl_planner.cpp
 iostream
 -
 signal.h
@@ -3892,7 +3892,7 @@ kdl/frames_io.hpp
 ompl/geometric/PathSimplifier.h
 -
 gvl_ompl_planner_helper.h
-/root/workspace/gpu_voxel_panda_sim/gvl_ompl_planner_helper.h
+/root/workspace/libfranka_gpu_voxel/gvl_ompl_planner_helper.h
 stdlib.h
 -
 ros/ros.h
@@ -3908,7 +3908,7 @@ stdlib.h
 vector
 -
 
-/root/workspace/gpu_voxel_panda_sim/gvl_ompl_planner_helper.h
+/root/workspace/libfranka_gpu_voxel/gvl_ompl_planner_helper.h
 gpu_voxels/GpuVoxels.h
 -
 ompl/base/SpaceInformation.h
