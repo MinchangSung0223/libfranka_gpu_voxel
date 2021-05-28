@@ -69,7 +69,7 @@ int is_move=0;
 int move_done = 0;
 void rosjointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 {
-  move_done = 1;
+
   //std::cout << "Got JointStateMessage" << std::endl;
   gvl->clearMap("myRobotMap");
 
@@ -78,17 +78,17 @@ void rosjointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
       myRobotJointValues[msg->name[i]] = msg->position[i];
       joint_states[i] = msg->position[i];
   }
-   joint_states[6] =    joint_states[6]+PI/4;
+   joint_states[6] =    joint_states[6];
   // update the robot joints:
   gvl->setRobotConfiguration("myUrdfRobot", myRobotJointValues);
   // insert the robot into the map:
   gvl->insertRobotIntoMap("myUrdfRobot", "myRobotMap",(eBVM_OCCUPIED));
+  move_done = 1;
 }
 
 void 
 roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
 {
-  move_done = 0;
   static float x(0.0);
   
   //gvl->clearMap("myEnvironmentMap");
@@ -113,9 +113,9 @@ roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
           
           new_data_received = true;
 
-          LOGGING_INFO(Gpu_voxels, "DistanceROSDemo camera callback. PointCloud size: " << msg->points.size() << endl);
-gvl->insertPointCloudFromFile("myEnvironmentMap", "table.binvox", true,
-                                      gpu_voxels::eBVM_OCCUPIED, true, gpu_voxels::Vector3f(0.85, 0.5, 0.0),1);
+          //LOGGING_INFO(Gpu_voxels, "DistanceROSDemo camera callback. PointCloud size: " << msg->points.size() << endl);
+                gvl->insertPointCloudFromFile("myEnvironmentMap", "./table.binvox", true,
+                      gpu_voxels::eBVM_OCCUPIED, true, gpu_voxels::Vector3f(0.85, 0.5, 0.0),1);
 
   gvl->visualizeMap("myEnvironmentMap");
   }
@@ -147,13 +147,13 @@ GvlOmplPlannerHelper::GvlOmplPlannerHelper(const ob::SpaceInformationPtr &si)
     gvl->addMap(MT_BITVECTOR_VOXELLIST,"myRobotMap2");
     //gvl->addMap(MT_BITVECTOR_OCTREE, "myEnvironmentMap");
     gvl->addMap(MT_BITVECTOR_VOXELLIST, "myTableMap");
-    gvl->insertPointCloudFromFile("myTableMap", "table.binvox", true,
-                                      gpu_voxels::eBVM_OCCUPIED, true, gpu_voxels::Vector3f(0.85, 0.5, 0.0),1);
+   // gvl->insertPointCloudFromFile("myTableMap", "table.binvox", true,
+    //                                  gpu_voxels::eBVM_OCCUPIED, true, gpu_voxels::Vector3f(0.85, 0.5, 0.0),1);
 
     gvl->addMap(MT_BITVECTOR_VOXELLIST,"mySolutionMap");
     gvl->addMap(MT_PROBAB_VOXELMAP,"myQueryMap");
 
-    gvl->addRobot("myUrdfRobot", "panda_coarse/panda_7link.urdf", true);
+    gvl->addRobot("myUrdfRobot", "./panda_coarse/panda_7link.urdf", true);
     //gvl->visualizeMap("myEnvironmentMap");
 
     PERF_MON_ENABLE("pose_check");
@@ -194,16 +194,12 @@ void GvlOmplPlannerHelper::moveObstacle()
 
 void GvlOmplPlannerHelper::doVis()
 {
+     //LOGGING_INFO(Gpu_voxels, "Dovis " << endl);
 
-    // tell the visualier that the map has changed:
-
-    //gvl->visualizeMap("myRobotMap");
     gvl->visualizeMap("myEnvironmentMap");
-
-    gvl->visualizeMap("countingVoxelList");
     gvl->visualizeMap("mySolutionMap");
     gvl->visualizeMap("myQueryMap");
-        gvl->clearMap("myRobotMap");
+    gvl->clearMap("myRobotMap");
     gvl->visualizeMap("myRobotMap2");
     gvl->visualizeMap("myTableMap");
 
@@ -605,6 +601,7 @@ jointState.position.push_back(0.0);
   while (ros::ok())
   {
     ros::spinOnce();
+        doVis();
         move_done=0;
 	countingVoxelList->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
         erodeTempVoxmap1->merge(countingVoxelList);

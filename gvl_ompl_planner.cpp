@@ -246,33 +246,19 @@ void doTaskPlanning(double* goal_values){
      }
 
     my_class_ptr->rosPublishJointTrajectory(q_list);
-        double err=10000;
      while(1){
-          double temp_err=0;
-          double start_values[7];
-          my_class_ptr->getJointStates(start_values);
-          std::array<double,7> temp =  q_list.at(q_list.size()-1);
-          for(int j =0;j<7;j++)
-                temp_err += abs(start_values[j]-temp[j]);
-          err =temp_err;
+          int move_done =my_class_ptr->getMoveDone();
                 
-          sleep(10);
-          if(err<1){
+          if(move_done==1){
                 break;
           }
-          std:cout<<"ERROR VALUE : "<<err<<std::endl;
         }
     q_list.clear();
 
 
 }
 
-void doVis(){
 
-	my_class_ptr->doVis();
-	my_class_ptr->moveObstacle();
-
-}
 int main(int argc, char **argv)
 {
 
@@ -331,14 +317,22 @@ signal(SIGINT, ctrlchandler);
     my_class_ptr->setParams(roll,pitch,yaw,X,Y,Z);
     thread t1{&GvlOmplPlannerHelper::rosIter ,my_class_ptr};    
     //thread t2(jointStateCallback);
-    thread t3(doVis);
-
 
     sleep(10);
 
    States state = READY;
    int toggle = 1;
+   std::vector<std::array<double,7>> init_q_list;
+   double start_values[7];
+   my_class_ptr->getJointStates(start_values);
+   std::array<double,7> init_joint_value0 = {{start_values[0],start_values[1],start_values[2],start_values[3],start_values[4],start_values[5],start_values[8]}};
+   std::array<double,7> init_joint_value={{0.000 ,-0.785 ,0.000 ,-2.356 ,0.000 ,1.571, 1.585}};
+   init_q_list.push_back(init_joint_value0);
+   init_q_list.push_back(init_joint_value);
 
+   init_q_list.clear();
+        
+   my_class_ptr->rosPublishJointTrajectory(init_q_list);
 
         while(1){
         int continue_value=0;
@@ -349,10 +343,10 @@ signal(SIGINT, ctrlchandler);
                 break;
                 }       
       my_class_ptr->isMove(1);
-	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.58,0.40,0.3};
+	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.55,0.30,0.3};
        doTaskPlanning(task_goal_values00);
        
-       double task_goal_values11[7] ={0.92395,-0.38252,0,0,0.58,-0.40,0.3};
+       double task_goal_values11[7] ={0.92395,-0.38252,0,0,0.55,-0.30,0.3};
        doTaskPlanning(task_goal_values11);  
        doTaskPlanning(task_goal_values00);
        double task_goal_values12[7] ={0.92395,-0.38252,0,0,0.3,0,0.59027};
@@ -364,6 +358,5 @@ signal(SIGINT, ctrlchandler);
 //----------------------------------------------------//
     t1.join();
     //t2.join();
-    t3.join();
     return 1;
 }
