@@ -103,6 +103,7 @@ roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
     	point_data[i].z = msg->points[i].z;
   }
 
+
   //my_point_cloud.add(point_data);
   if(is_move ==0){
     gvl->clearMap("myEnvironmentMap");
@@ -117,11 +118,18 @@ roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
                 gvl->insertPointCloudFromFile("myEnvironmentMap", "./table.binvox", true,
                       gpu_voxels::eBVM_OCCUPIED, true, gpu_voxels::Vector3f(0.85, 0.5, 0.0),1);
 
-  gvl->visualizeMap("myEnvironmentMap");
+  //gvl->visualizeMap("myEnvironmentMap");
   }
   
+  gvl->insertBoxIntoMap(Vector3f(0.5,1.5,0.85), Vector3f(1.66,1.5,0.85+1), "myEnvironmentMap", gpu_voxels::eBVM_OCCUPIED, 1);
+gvl->insertBoxIntoMap(Vector3f(0.5,0.5,0.85), Vector3f(1.66,0.5,0.85+1), "myEnvironmentMap", gpu_voxels::eBVM_OCCUPIED, 1);
+gvl->insertBoxIntoMap(Vector3f(0.5,0.5,1.85), Vector3f(1.66,1.5,1.85), "myEnvironmentMap", gpu_voxels::eBVM_OCCUPIED, 1);
+gvl->insertBoxIntoMap(Vector3f(0.5,0.5,0.85), Vector3f(0.5,1.5,1.85), "myEnvironmentMap", gpu_voxels::eBVM_OCCUPIED, 1);
 
-    gvl->visualizeMap("myRobotMap2");
+
+    //gvl->visualizeMap("myRobotMap2");
+    //gvl->visualizeMap("myRobotMap");
+
 }
 
 
@@ -197,9 +205,9 @@ void GvlOmplPlannerHelper::doVis()
      //LOGGING_INFO(Gpu_voxels, "Dovis " << endl);
 
     gvl->visualizeMap("myEnvironmentMap");
-    gvl->visualizeMap("mySolutionMap");
-    gvl->visualizeMap("myQueryMap");
-    gvl->clearMap("myRobotMap");
+    //gvl->visualizeMap("mySolutionMap");
+    //gvl->visualizeMap("myQueryMap");
+    gvl->visualizeMap("myRobotMap");
     gvl->visualizeMap("myRobotMap2");
     gvl->visualizeMap("myTableMap");
 
@@ -284,7 +292,9 @@ void GvlOmplPlannerHelper::visualizeRobot(const double *values)
         gvl->setRobotConfiguration("myUrdfRobot", state_joint_values);
         // insert the robot into the map:
        gvl->insertRobotIntoMap("myUrdfRobot", "myRobotMap2",BitVoxelMeaning(eBVM_SWEPT_VOLUME_START+180));
+       gvl->insertRobotIntoMap("myUrdfRobot", "myRobotMap",eBVM_OCCUPIED);
 
+    gvl->visualizeMap("myRobotMap");
     gvl->visualizeMap("myRobotMap2");
 
 }
@@ -517,7 +527,7 @@ signal(SIGINT, ctrlchandler);
     // camera located at y=-0.2m, x_max/2, z_max/2
 
 
-  const Vector3f camera_offsets(X,Y,Z);
+  const Vector3f camera_offsets(X+1.0,Y+1.0,Z+0.85);
   tf = Matrix4f::createFromRotationAndTranslation(Matrix3f::createFromRPY(0+ roll, 0+pitch, 0+  yaw), camera_offsets);
 
   
@@ -569,16 +579,7 @@ std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("
   new_data_received = true; // call visualize on the first iteration
 
   //LOGGING_INFO(Gpu_voxels, "start visualizing maps" << endl);
-  for(int j = 0;j<100;j++){
-  	ros::spinOnce();
-	countingVoxelList->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
-    erodeTempVoxmap1->merge(countingVoxelList);
-  	erodeTempVoxmap1->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
-  gvl->visualizeMap("myEnvironmentMap");
 
-      r.sleep();
-
-  }
  
 sensor_msgs::JointState jointState;
 jointState.name.push_back("panda_joint1");
@@ -601,12 +602,10 @@ jointState.position.push_back(0.0);
   while (ros::ok())
   {
     ros::spinOnce();
-        doVis();
         move_done=0;
 	countingVoxelList->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
         erodeTempVoxmap1->merge(countingVoxelList);
   	erodeTempVoxmap1->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
-        gvl->visualizeMap("myEnvironmentMap");
 
                if(pub_trig==1){
                 trajectory_msgs::JointTrajectory jointTrajectory;
@@ -671,6 +670,7 @@ jointState.position.push_back(0.0);
     // visualize new pointcloud if there is new data
     if (new_data_received) 
     {
+     doVis();
       new_data_received = false;
       iteration++;
 
