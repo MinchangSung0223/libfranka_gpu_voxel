@@ -92,7 +92,7 @@ void doTaskPlanning(double* goal_values){
     std::shared_ptr<GvlOmplPlannerHelper> my_class_ptr(std::make_shared<GvlOmplPlannerHelper>(si));
 
     //Set the state validity checker
-       std::cout << "-------------------------------------------------" << std::endl;
+    // std::cout << "-------------------------------------------------" << std::endl;
     og::PathSimplifier simp(si);
 
     si->setStateValidityChecker(my_class_ptr->getptr());
@@ -109,13 +109,13 @@ void doTaskPlanning(double* goal_values){
     LOGGING_INFO(Gpu_voxels, "\n\nKDL Number of Joints : "<<my_tree.getNrOfJoints() <<"\n"<< endl);
     LOGGING_INFO(Gpu_voxels, "\n\nKDL Chain load : "<<my_tree.getChain("panda_link0","panda_link8",my_chain) <<"\n"<< endl);
   
-    std::cout<<my_chain.getNrOfJoints()<<std::endl;
+  //  std::cout<<my_chain.getNrOfJoints()<<std::endl;
 
 
     KDL::JntArray q1(my_chain.getNrOfJoints());
     KDL::JntArray q_init(my_chain.getNrOfJoints());
   
-    std::cout<<my_chain.getNrOfJoints()<<std::endl;
+    //std::cout<<my_chain.getNrOfJoints()<<std::endl;
 
     double start_values[7];
     my_class_ptr->getJointStates(start_values);
@@ -143,12 +143,10 @@ void doTaskPlanning(double* goal_values){
     q_max(5) = 3.7525;
     q_max(6) = 2.8973;
 
-
-
     KDL::Frame cart_pos;
     KDL::ChainFkSolverPos_recursive fk_solver = KDL::ChainFkSolverPos_recursive(my_chain);
     fk_solver.JntToCart(q_init, cart_pos);
-    cout<<cart_pos<<endl;
+   // cout<<cart_pos<<endl;
     KDL::ChainIkSolverVel_pinv iksolver1v(my_chain);
     KDL::ChainIkSolverPos_NR_JL iksolver1(my_chain,q_min,q_max,fk_solver,iksolver1v,2000,0.01);
   	KDL::Vector pos = KDL::Vector(0.05,-0.1865,1.20);
@@ -157,8 +155,8 @@ void doTaskPlanning(double* goal_values){
     KDL::Frame goal_pose( KDL::Rotation::Quaternion(goal_values[0],goal_values[1],goal_values[2],goal_values[3]),KDL::Vector(goal_values[4],goal_values[5],goal_values[6]));
 
     bool ret = iksolver1.CartToJnt(q_init,goal_pose,q1);
-    std::cout<<"ik ret : "<<ret<<std::endl;
-    std::cout<<"ik q : "<<q1(0)<<","<<q1(1)<<","<<q1(2)<<","<<q1(3)<<","<<q1(4)<<","<<q1(5)<<","<<q1(6)<<std::endl;
+   // std::cout<<"ik ret : "<<ret<<std::endl;
+   // std::cout<<"ik q : "<<q1(0)<<","<<q1(1)<<","<<q1(2)<<","<<q1(3)<<","<<q1(4)<<","<<q1(5)<<","<<q1(6)<<std::endl;
     
     ob::ScopedState<> start(space);
 
@@ -191,8 +189,8 @@ void doTaskPlanning(double* goal_values){
     planner->setup();
 
     int succs = 0;
-    system("cls");
-    std::cout << "Waiting for Viz. Press Key if ready!" << std::endl;
+
+    std::system("clear");
     ob::PathPtr path ;
      while(succs<1)
     {
@@ -207,7 +205,7 @@ void doTaskPlanning(double* goal_values){
                 {
                     ++succs;
                     path = pdef->getSolutionPath();
-                    std::cout << "Found solution:" << std::endl;
+                    //std::cout << "Found solution:" << std::endl;
                     path->print(std::cout);
                     simp.simplifyMax(*(path->as<og::PathGeometric>()));
 
@@ -322,34 +320,27 @@ signal(SIGINT, ctrlchandler);
 
    States state = READY;
    int toggle = 1;
-   std::vector<std::array<double,7>> init_q_list;
-   double start_values[7];
-   my_class_ptr->getJointStates(start_values);
-   std::array<double,7> init_joint_value0 = {{start_values[0],start_values[1],start_values[2],start_values[3],start_values[4],start_values[5],start_values[8]}};
-   std::array<double,7> init_joint_value={{0.000 ,-0.785 ,0.000 ,-2.356 ,0.000 ,1.571, 1.585}};
-   init_q_list.push_back(init_joint_value0);
-   init_q_list.push_back(init_joint_value);
-
-   init_q_list.clear();
-        
-   my_class_ptr->rosPublishJointTrajectory(init_q_list);
-
         while(1){
+        std::system("clear");
         int continue_value=0;
-        std::cin >> continue_value;
-        if (continue_value != 0){
-                killhandler(1);
-                ctrlchandler(1);
-                break;
-                }       
+        std::cout << "Press Enter Key if ready!" << std::endl;
+        std::cin.ignore();
+
+        std::cout<<"Start Motion 1"<<std::endl;    
       my_class_ptr->isMove(1);
-	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.55,0.30,0.3};
+	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.55,0.33,0.3};
        doTaskPlanning(task_goal_values00);
-       
-       double task_goal_values11[7] ={0.92395,-0.38252,0,0,0.55,-0.30,0.3};
+
+       std::system("clear");
+        std::cout<<"Start Motion 2"<<std::endl;
+       double task_goal_values11[7] ={0.92395,-0.38252,0,0,0.55,-0.33,0.3};
        doTaskPlanning(task_goal_values11);  
+       std::system("clear");
+        std::cout<<"Start Motion 3"<<std::endl;
        doTaskPlanning(task_goal_values00);
        double task_goal_values12[7] ={0.92395,-0.38252,0,0,0.3,0,0.59027};
+       std::system("clear");
+        std::cout<<"Start Motion 4"<<std::endl;
        doTaskPlanning(task_goal_values12);  
     my_class_ptr->isMove(0);
         }
