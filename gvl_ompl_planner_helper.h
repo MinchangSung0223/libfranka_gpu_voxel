@@ -81,6 +81,8 @@ public:
     void insertStartAndGoal(const ompl::base::ScopedState<> &start, const ompl::base::ScopedState<> &goal) const;
     void visualizeSolution(ompl::base::PathPtr path);
     void doVis();
+    void doVis2();
+
     void isMove(int i);
     int getMoveDone();
     void setParams(float roll,float pitch,float yaw,float X,float Y,float Z);
