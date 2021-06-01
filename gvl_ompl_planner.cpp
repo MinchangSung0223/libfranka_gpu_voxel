@@ -73,6 +73,9 @@ using namespace std;
 std::shared_ptr<GvlOmplPlannerHelper> my_class_ptr;
 enum States { READY, FIND, GRASP, MOVE1,MOVE2,UNGRASP };
 
+
+
+
 void doTaskPlanning(double* goal_values){
 
 
@@ -256,12 +259,74 @@ void doTaskPlanning(double* goal_values){
 
 }
 
+Eigen::Matrix<float, 4, 4>  loadText(string filename){
+     string testline;
+    string word[4][4];
+    Eigen::Matrix<float, 4, 4> TBaseToCamera = Eigen::Matrix<float, 4, 4>::Identity();
+    ifstream Test (filename);
+
+    if (!Test)
+    {
+        cout << "There was an error opening the file.\n";
+        return TBaseToCamera;
+    }
+    int x=0,y=0;
+    while( Test>>testline ){
+        word[y][x]=testline;
+        x++;
+        if (testline=="")
+        y++;
+    }
+        for (int y=0;y<4;y++)
+        {
+            for (int x=0;x<4;x++)
+                 TBaseToCamera(y,x)= std::stod(word[y][x]);
+        }
+    return TBaseToCamera;
+}
+
+
+std::array<double,7>  loadPosition(string filename){
+     string testline;
+    string word[7];
+    std::array<double,7>  result = {{0,0,0,0,0,0,0}};
+    ifstream Test (filename);
+
+    if (!Test)
+    {
+        cout << "There was an error opening the file.\n";
+        return result;
+    }
+    int y=0;
+    while( Test>>testline ){
+        word[y]=testline;
+        y++;
+    }
+        for (int y=0;y<7;y++)
+        {
+                 result.at(y)= std::stod(word[y]);
+        }
+    return result;
+}
 
 int main(int argc, char **argv)
 {
 
+Eigen::Matrix<float, 4, 4>  TBaseToCamera = loadText("TBaseToCamera.txt");
+cout<<"==========TBaseToCmaera.txt==========\n";
+std::cout<<TBaseToCamera<<std::endl;
+std::cout<<"===================================="<<std::endl;
 
+cout<<"==========TargetPosition.txt==========\n";
+std::array<double,7> targetPosition = loadPosition("TargetPosition.txt");
+std::cout<<targetPosition.at(0)<<","<<targetPosition.at(1)<<","<<targetPosition.at(2)<<","<<targetPosition.at(3)<<","<<targetPosition.at(4)<<","<<targetPosition.at(5)<<","<<targetPosition.at(6)<<std::endl;
+std::cout<<"===================================="<<std::endl;
+std::cout << "Press Enter Key if ready!" << std::endl;
+
+
+std::cin.ignore();
  
+
 signal(SIGINT, ctrlchandler);
   signal(SIGTERM, killhandler);
 
@@ -330,17 +395,17 @@ signal(SIGINT, ctrlchandler);
 
         std::cout<<"Start Motion 1"<<std::endl;    
       my_class_ptr->isMove(1);
-	double task_goal_values00[7] ={0.92395,-0.38252,0,0,0.55,0.33,0.3};
+	double task_goal_values00[7] ={targetPosition.at(0),targetPosition.at(1),targetPosition.at(2),targetPosition.at(3),targetPosition.at(4),targetPosition.at(5),targetPosition.at(6)};
        doTaskPlanning(task_goal_values00);
 
        std::system("clear");
         std::cout<<"Start Motion 2"<<std::endl;
-       double task_goal_values11[7] ={0.92395,-0.38252,0,0,0.55,-0.33,0.3};
+       double task_goal_values11[7] ={targetPosition.at(0),targetPosition.at(1),targetPosition.at(2),targetPosition.at(3),targetPosition.at(4),-targetPosition.at(5),targetPosition.at(6)};
        doTaskPlanning(task_goal_values11);  
        std::system("clear");
         std::cout<<"Start Motion 3"<<std::endl;
        doTaskPlanning(task_goal_values00);
-       double task_goal_values12[7] ={0.92395,-0.38252,0,0,0.3,0,0.59027};
+       double task_goal_values12[7] ={targetPosition.at(0),targetPosition.at(1),targetPosition.at(2),targetPosition.at(3),targetPosition.at(4),targetPosition.at(5),targetPosition.at(6)};
        std::system("clear");
         std::cout<<"Start Motion 4"<<std::endl;
        doTaskPlanning(task_goal_values12);  
