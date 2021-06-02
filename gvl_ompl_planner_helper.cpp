@@ -67,6 +67,7 @@ float Y = 0.0f;
 float Z = 0.0f;
 int is_move=0;
 int move_done = 0;
+Eigen::Matrix<float, 4, 4> TBaseToCamera= Eigen::Matrix<float, 4, 4>::Identity();
 void rosjointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 {
 
@@ -100,9 +101,13 @@ roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
 
   for (uint32_t i = 0; i < msg->points.size(); i++)
   {
+        
     	point_data[i].x = msg->points[i].x;
     	point_data[i].y = msg->points[i].y;
     	point_data[i].z = msg->points[i].z;
+        point_data[i].x = TBaseToCamera(0,0)*point_data[i].x +TBaseToCamera(0,2)*point_data[i].y +TBaseToCamera(0,3)*point_data[i].z +TBaseToCamera(0,3)*1.0;
+    	point_data[i].y = TBaseToCamera(1,0)*point_data[i].x +TBaseToCamera(1,2)*point_data[i].y +TBaseToCamera(1,3)*point_data[i].z +TBaseToCamera(1,3)*1.0;
+    	point_data[i].z = TBaseToCamera(2,0)*point_data[i].x +TBaseToCamera(2,2)*point_data[i].y +TBaseToCamera(2,3)*point_data[i].z +TBaseToCamera(2,3)*1.0;
   }
 
 
@@ -235,6 +240,10 @@ gvl->insertPointCloudFromFile("myEnvironmentMap", "./table.binvox", true,
 
 }
 
+void GvlOmplPlannerHelper::setTransformation(Eigen::Matrix<float, 4, 4> T)
+{
+   TBaseToCamera = T;
+}
 void GvlOmplPlannerHelper::isMove(int i)
 {
         is_move = i;

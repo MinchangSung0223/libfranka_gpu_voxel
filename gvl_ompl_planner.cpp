@@ -315,6 +315,7 @@ int main(int argc, char **argv)
 Eigen::Matrix<float, 4, 4>  TBaseToCamera = loadText("TBaseToCamera.txt");
 cout<<"==========TBaseToCmaera.txt==========\n";
 std::cout<<TBaseToCamera<<std::endl;
+std::cout<<TBaseToCamera(0,3)<<std::endl;
 std::cout<<"===================================="<<std::endl;
 
 cout<<"==========TargetPosition.txt==========\n";
@@ -377,14 +378,15 @@ signal(SIGINT, ctrlchandler);
     float Z = atof(argv[6]);
     
 
-    my_class_ptr->setParams(roll,pitch,yaw,X,Y,Z);
+    //my_class_ptr->setParams(roll,pitch,yaw,X,Y,Z);
+    my_class_ptr->setTransformation(TBaseToCamera);
     thread t1{&GvlOmplPlannerHelper::rosIter ,my_class_ptr};    
     thread t2{&GvlOmplPlannerHelper::doVis2 ,my_class_ptr};    
 
     //thread t2(jointStateCallback);
 
     sleep(10);
-
+   
    States state = READY;
    int toggle = 1;
         while(1){

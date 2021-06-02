@@ -82,7 +82,7 @@ public:
     void visualizeSolution(ompl::base::PathPtr path);
     void doVis();
     void doVis2();
-
+    void setTransformation(Eigen::Matrix<float, 4, 4> T);
     void isMove(int i);
     int getMoveDone();
     void setParams(float roll,float pitch,float yaw,float X,float Y,float Z);
