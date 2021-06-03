@@ -39,6 +39,7 @@ robot::JointValueMap myRobotJointValues;
 gpu_voxels::GpuVoxelsSharedPtr gvl;
 PointCloud my_point_cloud;
 Matrix4f tf;
+
 using boost::dynamic_pointer_cast;
 using boost::shared_ptr;
 using gpu_voxels::voxelmap::ProbVoxelMap;

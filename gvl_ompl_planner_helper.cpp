@@ -67,7 +67,7 @@ float Y = 0.0f;
 float Z = 0.0f;
 int is_move=0;
 int move_done = 0;
-Eigen::Matrix<float, 4, 4> TBaseToCamera= Eigen::Matrix<float, 4, 4>::Identity();
+Eigen::Matrix<float, 4, 4> TBaseToCamera;
 void rosjointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 {
 
@@ -108,18 +108,17 @@ void roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
   }
 
 
-  //my_point_cloud.add(point_data);
+
   if(is_move ==0){
     gvl->clearMap("myEnvironmentMap");
           my_point_cloud.update(point_data);
-
           // transform new pointcloud to world coordinates
+          
           my_point_cloud.transformSelf(&tf);
           
           new_data_received = true;
-
-          //LOGGING_INFO(Gpu_voxels, "DistanceROSDemo camera callback. PointCloud size: " << msg->points.size() << endl);
-                
+          
+      
 
   //gvl->visualizeMap("myEnvironmentMap");
   }
@@ -143,15 +142,13 @@ void roscallback2(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
 
   for (uint32_t i = 0; i < msg->points.size(); i++)
   {
-        
     	point_data[i].x = msg->points[i].x;
     	point_data[i].y = msg->points[i].y;
     	point_data[i].z = msg->points[i].z;
 
   }
-
   if(is_move ==0){
-          my_point_cloud.update(point_data);
+          my_point_cloud.add(point_data);
           my_point_cloud.transformSelf(&tf);
   }
 
@@ -262,25 +259,7 @@ gvl->insertPointCloudFromFile("myEnvironmentMap", "./table.binvox", true,
 void GvlOmplPlannerHelper::setTransformation(Eigen::Matrix<float, 4, 4> T)
 {
    TBaseToCamera = T;
-  TBaseToCamera(0,3) =   TBaseToCamera(0,3) +1.0;
-  TBaseToCamera(1,3) =   TBaseToCamera(1,3) +1.0;
-  TBaseToCamera(2,3) =   TBaseToCamera(2,3) +0.85;
-  tf.a11=TBaseToCamera(0,0);
-  tf.a12=TBaseToCamera(0,1);
-  tf.a13=TBaseToCamera(0,2);
-  tf.a21=TBaseToCamera(1,0);
-  tf.a22=TBaseToCamera(1,1);
-  tf.a23=TBaseToCamera(1,2);
-  tf.a31=TBaseToCamera(2,0);
-  tf.a32=TBaseToCamera(2,1);
-  tf.a33=TBaseToCamera(2,2);
-  tf.a14=TBaseToCamera(0,3);
-  tf.a24=TBaseToCamera(1,3);
-  tf.a34=TBaseToCamera(2,3);
-  tf.a14=0;
-  tf.a24=0;
-  tf.a34=0;
-  tf.a44=1;
+
 
 
 }
@@ -600,9 +579,13 @@ signal(SIGINT, ctrlchandler);
 
 
   const Vector3f camera_offsets(X+1.0,Y+1.0,Z+0.85);
-  tf = gpu_voxels::Matrix4f::createIdentity();
-
-
+   gpu_voxels::Matrix4f matrix(TBaseToCamera(0,0),TBaseToCamera(0,1),TBaseToCamera(0,2),TBaseToCamera(0,3)+1.0,
+TBaseToCamera(1,0),TBaseToCamera(1,1),TBaseToCamera(1,2),TBaseToCamera(1,3)+1.0,
+TBaseToCamera(2,0),TBaseToCamera(2,1),TBaseToCamera(2,2),TBaseToCamera(2,3)+0.85,
+0,0,0,1);
+tf = matrix;
+   
+  std::cout<<TBaseToCamera<<std::endl;
 
   
   //std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("points-topic", "/camera/depth/color/points");
