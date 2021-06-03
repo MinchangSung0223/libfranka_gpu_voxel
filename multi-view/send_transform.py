@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import rospy
 import tf
 import sensor_msgs.point_cloud2 as pc2

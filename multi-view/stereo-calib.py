@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import numpy as np
 import cv2
 import glob
@@ -103,7 +103,7 @@ class StereoCalibration:
         dir_name = 'config'
         if os.path.exists(dir_name):
             shutil.rmtree(dir_name)
-        os.makedirs(dir_name, exist_ok=True)
+        os.makedirs(dir_name)
 
         print('Initializing..')
 
@@ -207,9 +207,9 @@ class StereoCalibration:
                     if n_img == 0:
                         if os.path.exists(dir_name):
                             shutil.rmtree(dir_name)
-                        os.makedirs(dir_name, exist_ok=True)
-
-                    cv2.imwrite(dir_name + '/img' + f'{n_img:02}.png', gray_img[i])
+                        os.makedirs(dir_name)
+                    print(n_img)
+                    cv2.imwrite(dir_name +'/img'+str(n_img).zfill(2)+'.png', gray_img[i])
                     cv2.putText(gray_img[i], 'cam'+str(i), (960, 90), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 0, 0), 2, cv2.LINE_AA)
                     total_gray_img = np.hstack((total_gray_img, gray_img[i]))
                     self.imgpoints2[i, n_img] = self.corners2[i]
