@@ -89,8 +89,7 @@ void rosjointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
   move_done = 1;
 }
 
-void 
-roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
+void roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
 {
   static float x(0.0);
   
@@ -105,9 +104,7 @@ roscallback(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
     	point_data[i].x = msg->points[i].x;
     	point_data[i].y = msg->points[i].y;
     	point_data[i].z = msg->points[i].z;
-        point_data[i].x = TBaseToCamera(0,0)*point_data[i].x +TBaseToCamera(0,2)*point_data[i].y +TBaseToCamera(0,3)*point_data[i].z +TBaseToCamera(0,3)*1.0;
-    	point_data[i].y = TBaseToCamera(1,0)*point_data[i].x +TBaseToCamera(1,2)*point_data[i].y +TBaseToCamera(1,3)*point_data[i].z +TBaseToCamera(1,3)*1.0;
-    	point_data[i].z = TBaseToCamera(2,0)*point_data[i].x +TBaseToCamera(2,2)*point_data[i].y +TBaseToCamera(2,3)*point_data[i].z +TBaseToCamera(2,3)*1.0;
+
   }
 
 
@@ -132,15 +129,31 @@ gvl->insertBoxIntoMap(Vector3f(0.5,0.5,0.85), Vector3f(1.66,0.5,0.85+1), "myEnvi
 gvl->insertBoxIntoMap(Vector3f(0.5,0.5,1.85), Vector3f(1.66,1.5,1.85), "myEnvironmentMap", gpu_voxels::eBVM_OCCUPIED, 1);
 gvl->insertBoxIntoMap(Vector3f(0.5,0.5,0.85), Vector3f(0.5,1.5,1.85), "myEnvironmentMap", gpu_voxels::eBVM_OCCUPIED, 1);
 
-gvl->insertBoxIntoMap(Vector3f(0.5,1.49,0.85), Vector3f(1.66,1.51,0.85+1), "myTableMap", BitVoxelMeaning(eBVM_SWEPT_VOLUME_START+125), 1);
-gvl->insertBoxIntoMap(Vector3f(0.5,0.49,0.85), Vector3f(1.66,0.51,0.85+1), "myTableMap", BitVoxelMeaning(eBVM_SWEPT_VOLUME_START+125), 1);
-gvl->insertBoxIntoMap(Vector3f(0.5,0.5,1.85-0.025), Vector3f(1.66,1.5,1.85+0.025), "myTableMap", BitVoxelMeaning(eBVM_SWEPT_VOLUME_START+125), 1);
-gvl->insertBoxIntoMap(Vector3f(0.5-0.025,0.5,0.85), Vector3f(0.5+0.025,1.5,1.85), "myTableMap", BitVoxelMeaning(eBVM_SWEPT_VOLUME_START+125), 1);
-
 
 
     //gvl->visualizeMap("myRobotMap2");
     //gvl->visualizeMap("myRobotMap");
+
+}
+void roscallback2(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& msg)
+{
+  
+  std::vector<Vector3f> point_data;
+  point_data.resize(msg->points.size());
+
+  for (uint32_t i = 0; i < msg->points.size(); i++)
+  {
+        
+    	point_data[i].x = msg->points[i].x;
+    	point_data[i].y = msg->points[i].y;
+    	point_data[i].z = msg->points[i].z;
+
+  }
+
+  if(is_move ==0){
+          my_point_cloud.update(point_data);
+          my_point_cloud.transformSelf(&tf);
+  }
 
 }
 
@@ -221,6 +234,12 @@ void GvlOmplPlannerHelper::doVis()
     //gvl->visualizeMap("myQueryMap");
     gvl->visualizeMap("myRobotMap");
     gvl->visualizeMap("myRobotMap2");
+        gvl->insertBoxIntoMap(Vector3f(0.5,1.49,0.85), Vector3f(1.66,1.51,0.85+1), "myTableMap", BitVoxelMeaning(eBVM_SWEPT_VOLUME_START+125), 1);
+        gvl->insertBoxIntoMap(Vector3f(0.5,0.49,0.85), Vector3f(1.66,0.51,0.85+1), "myTableMap", BitVoxelMeaning(eBVM_SWEPT_VOLUME_START+125), 1);
+        gvl->insertBoxIntoMap(Vector3f(0.5,0.5,1.85-0.025), Vector3f(1.66,1.5,1.85+0.025), "myTableMap", BitVoxelMeaning(eBVM_SWEPT_VOLUME_START+125), 1);
+        gvl->insertBoxIntoMap(Vector3f(0.5-0.025,0.5,0.85), Vector3f(0.5+0.025,1.5,1.85), "myTableMap", BitVoxelMeaning(eBVM_SWEPT_VOLUME_START+125), 1);
+
+
     gvl->visualizeMap("myTableMap");
 
 }
@@ -243,6 +262,27 @@ gvl->insertPointCloudFromFile("myEnvironmentMap", "./table.binvox", true,
 void GvlOmplPlannerHelper::setTransformation(Eigen::Matrix<float, 4, 4> T)
 {
    TBaseToCamera = T;
+  TBaseToCamera(0,3) =   TBaseToCamera(0,3) +1.0;
+  TBaseToCamera(1,3) =   TBaseToCamera(1,3) +1.0;
+  TBaseToCamera(2,3) =   TBaseToCamera(2,3) +0.85;
+  tf.a11=TBaseToCamera(0,0);
+  tf.a12=TBaseToCamera(0,1);
+  tf.a13=TBaseToCamera(0,2);
+  tf.a21=TBaseToCamera(1,0);
+  tf.a22=TBaseToCamera(1,1);
+  tf.a23=TBaseToCamera(1,2);
+  tf.a31=TBaseToCamera(2,0);
+  tf.a32=TBaseToCamera(2,1);
+  tf.a33=TBaseToCamera(2,2);
+  tf.a14=TBaseToCamera(0,3);
+  tf.a24=TBaseToCamera(1,3);
+  tf.a34=TBaseToCamera(2,3);
+  tf.a14=0;
+  tf.a24=0;
+  tf.a34=0;
+  tf.a44=1;
+
+
 }
 void GvlOmplPlannerHelper::isMove(int i)
 {
@@ -560,7 +600,9 @@ signal(SIGINT, ctrlchandler);
 
 
   const Vector3f camera_offsets(X+1.0,Y+1.0,Z+0.85);
-  tf = Matrix4f::createFromRotationAndTranslation(Matrix3f::createFromRPY(0+ roll, 0+pitch, 0+  yaw), camera_offsets);
+  tf = gpu_voxels::Matrix4f::createIdentity();
+
+
 
   
   //std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("points-topic", "/camera/depth/color/points");
@@ -602,7 +644,12 @@ signal(SIGINT, ctrlchandler);
 
   ros::Subscriber sub1 = nh.subscribe("joint_states", 1, rosjointStateCallback); 
 std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("points-topic", "/camera/depth/color/points");
+
   ros::Subscriber sub = nh.subscribe<pcl::PointCloud<pcl::PointXYZ> >(point_cloud_topic, 1,roscallback);
+
+  ros::Subscriber sub2 = nh.subscribe<pcl::PointCloud<pcl::PointXYZ> >("/camera/depth/color/points2", 1,roscallback2);
+
+
    ros::Publisher pub = nh.advertise<trajectory_msgs::JointTrajectory>("joint_trajectory", 1000);
    ros::Publisher pub2 =  nh.advertise<sensor_msgs::JointState>("joint_states", 1000);
 

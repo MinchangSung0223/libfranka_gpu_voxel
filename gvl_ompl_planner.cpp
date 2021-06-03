@@ -380,6 +380,7 @@ signal(SIGINT, ctrlchandler);
 
     //my_class_ptr->setParams(roll,pitch,yaw,X,Y,Z);
     my_class_ptr->setTransformation(TBaseToCamera);
+
     thread t1{&GvlOmplPlannerHelper::rosIter ,my_class_ptr};    
     thread t2{&GvlOmplPlannerHelper::doVis2 ,my_class_ptr};    
 
