@@ -74,7 +74,32 @@ std::shared_ptr<GvlOmplPlannerHelper> my_class_ptr;
 enum States { READY, FIND, GRASP, MOVE1,MOVE2,UNGRASP };
 
 
+void goHome(){
+    double start_values[7];
+    my_class_ptr->getJointStates(start_values);
 
+    std::vector<std::array<double,7>> q_list;
+    q_list.clear();
+    std::array<double,7> start = { {start_values[0],start_values[1],start_values[2],start_values[3],start_values[4],start_values[5],start_values[6]}};
+    std::array<double,7> end =     {{0.000 ,-0.785 ,0.000 ,-2.356, 0.000 ,1.571 ,1.585/2}};
+    std::array<double,7> mid =     {{start_values[0]*0.5+end.at(0)*0.5,start_values[1]*0.5+end.at(1)*0.5,start_values[2]*0.5+end.at(2)*0.5,start_values[3]*0.5+end.at(3)*0.5,start_values[4]*0.5+end.at(4)*0.5,start_values[5]*0.5+end.at(5)*0.5,start_values[6]*0.5+end.at(6)*0.5}};
+
+    q_list.push_back(start);
+    q_list.push_back(mid);
+    q_list.push_back(end);
+    q_list.push_back(end);
+
+    my_class_ptr->rosPublishJointTrajectory(q_list);
+     while(1){
+          int move_done =my_class_ptr->getMoveDone();
+                
+          if(move_done==1){
+                break;
+          }
+        }
+    q_list.clear();
+ 
+}
 
 void doTaskPlanning(double* goal_values){
 
@@ -416,12 +441,11 @@ signal(SIGINT, ctrlchandler);
        doTaskPlanning(task_goal_values12);  
 
 
- double task_goal_values13[7] ={0.92396,-0.3825,0,0,0.30702,0.0,0.69727};
+
 
        std::system("clear");
         std::cout<<"Start Motion 5"<<std::endl;
-       doTaskPlanning(task_goal_values13);  
-
+        goHome();
 
 
     my_class_ptr->isMove(0);
