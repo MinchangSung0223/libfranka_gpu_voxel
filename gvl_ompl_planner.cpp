@@ -410,9 +410,20 @@ signal(SIGINT, ctrlchandler);
         std::cout<<"Start Motion 3"<<std::endl;
        doTaskPlanning(task_goal_values00);
        double task_goal_values12[7] ={targetPosition.at(0),targetPosition.at(1),targetPosition.at(2),targetPosition.at(3),targetPosition.at(4),targetPosition.at(5),targetPosition.at(6)};
+
        std::system("clear");
         std::cout<<"Start Motion 4"<<std::endl;
        doTaskPlanning(task_goal_values12);  
+
+
+ double task_goal_values13[7] ={0.92396,-0.3825,0,0,0.30702,0.0,0.69727};
+
+       std::system("clear");
+        std::cout<<"Start Motion 5"<<std::endl;
+       doTaskPlanning(task_goal_values13);  
+
+
+
     my_class_ptr->isMove(0);
         }
 
