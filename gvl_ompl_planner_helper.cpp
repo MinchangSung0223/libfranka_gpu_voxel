@@ -626,11 +626,11 @@ tf = matrix;
   ros::NodeHandle nh;
 
   ros::Subscriber sub1 = nh.subscribe("joint_states", 1, rosjointStateCallback); 
-std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("points-topic", "/camera/depth/color/points");
+std::string point_cloud_topic = icl_core::config::paramOptDefault<std::string>("points-topic", "/camera/depth/color/points2");
 
   ros::Subscriber sub = nh.subscribe<pcl::PointCloud<pcl::PointXYZ> >(point_cloud_topic, 1,roscallback);
 
-  ros::Subscriber sub2 = nh.subscribe<pcl::PointCloud<pcl::PointXYZ> >("/camera/depth/color/points2", 1,roscallback2);
+  //ros::Subscriber sub2 = nh.subscribe<pcl::PointCloud<pcl::PointXYZ> >("/camera/depth/color/points2", 1,roscallback2);
 
 
    ros::Publisher pub = nh.advertise<trajectory_msgs::JointTrajectory>("joint_trajectory", 1000);
@@ -743,7 +743,7 @@ jointState.position.push_back(0.0);
        gvl->visualizeMap("myEnvironmentMap");
 
        size_t num_colls_pc = gvl->getMap("myRobotMap")->as<voxelmap::ProbVoxelMap>()->collideWith(gvl->getMap("myEnvironmentMap")->as<voxelmap::ProbVoxelMap>(), 0.7f);
-        LOGGING_INFO(Gpu_voxels, num_colls_pc << endl);
+        //LOGGING_INFO(Gpu_voxels, num_colls_pc << endl);
     }
  
     r.sleep();

@@ -272,6 +272,8 @@ void doTaskPlanning(double* goal_values){
      }
 
     my_class_ptr->rosPublishJointTrajectory(q_list);
+    std::system("clear");
+    std::cout<<"Waiting for JointState"<<std::endl;
      while(1){
           int move_done =my_class_ptr->getMoveDone();
                 
@@ -279,6 +281,7 @@ void doTaskPlanning(double* goal_values){
                 break;
           }
         }
+    std::cout<<"Recived JointState"<<std::endl;
     q_list.clear();
 
 
@@ -323,6 +326,8 @@ std::array<double,7>  loadPosition(string filename){
         return result;
     }
     int y=0;
+
+ 
     while( Test>>testline ){
         word[y]=testline;
         y++;
@@ -336,12 +341,55 @@ std::array<double,7>  loadPosition(string filename){
 
 int main(int argc, char **argv)
 {
-
+    float roll = atof(argv[1]);
+    float pitch = atof(argv[2]);
+    float yaw = atof(argv[3]);
+    float X = atof(argv[4]);
+    float Y = atof(argv[5]);
+    float Z = atof(argv[6]);
 Eigen::Matrix<float, 4, 4>  TBaseToCamera = loadText("TBaseToCamera.txt");
 cout<<"==========TBaseToCmaera.txt==========\n";
 std::cout<<TBaseToCamera<<std::endl;
-std::cout<<TBaseToCamera(0,3)<<std::endl;
-std::cout<<"===================================="<<std::endl;
+std::cout<<"========Input Roll Pitch Yaw X Y Z========="<<std::endl;
+std::cout<<roll<<"\t"<<pitch<<"\t"<<yaw<<"\t"<<X<<"\t"<<Y<<"\t"<<Z<<std::endl;
+roll = roll*PI/180;
+pitch = pitch*PI/180;
+yaw = yaw*PI/180;
+Eigen::Matrix<float, 4, 4> inputT  = Eigen::Matrix<float, 4, 4>::Identity();
+Eigen::Matrix<float, 3, 3> Rx  = Eigen::Matrix<float, 3, 3>::Identity();
+Eigen::Matrix<float, 3, 3> Ry  = Eigen::Matrix<float, 3, 3>::Identity();
+Eigen::Matrix<float, 3, 3> Rz  = Eigen::Matrix<float, 3, 3>::Identity();
+Rx(1,1) = cos(roll);
+Rx(1,2) = -sin(roll);
+Rx(2,1) = sin(roll);
+Rx(2,2) = cos(roll);
+Ry(0,0) = cos(pitch);
+Ry(0,2) = sin(pitch);
+Ry(2,0) = -sin(pitch);
+Ry(2,2) = cos(pitch);
+Rz(0,0) = cos(yaw);
+Rz(0,1) = -sin(yaw);
+Rz(1,0) = sin(yaw);
+Rz(1,1) = cos(yaw);
+Eigen::Matrix<float, 3, 3>  R = Rx*Ry*Rz;
+inputT(0,0)=R(0,0);
+inputT(0,1)=R(0,1);
+inputT(0,2)=R(0,2);
+inputT(1,0)=R(1,0);
+inputT(1,1)=R(1,1);
+inputT(1,2)=R(1,2);
+inputT(2,0)=R(2,0);
+inputT(2,1)=R(2,1);
+inputT(2,2)=R(2,2);
+inputT(0,3) = X;
+inputT(1,3) = Y;
+inputT(2,3) = Z;
+std::cout<<"========Input T========="<<std::endl;
+std::cout<<inputT<<std::endl;
+std::cout<<"========InputT*TBaseToCmaera========="<<std::endl;
+TBaseToCamera = inputT*TBaseToCamera;
+std::cout<<TBaseToCamera<<std::endl;
+
 
 cout<<"==========TargetPosition.txt==========\n";
 std::array<double,7> targetPosition = loadPosition("TargetPosition.txt");
@@ -395,12 +443,7 @@ signal(SIGINT, ctrlchandler);
     //Set the state validity checker
     std::shared_ptr<GvlOmplPlannerHelper> my_class_ptr(std::make_shared<GvlOmplPlannerHelper>(si));
     my_class_ptr->doVis();
-    float roll = atof(argv[1]);
-    float pitch = atof(argv[2]);
-    float yaw = atof(argv[3]);
-    float X = atof(argv[4]);
-    float Y = atof(argv[5]);
-    float Z = atof(argv[6]);
+
     
 
     //my_class_ptr->setParams(roll,pitch,yaw,X,Y,Z);
