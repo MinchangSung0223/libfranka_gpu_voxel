@@ -91,14 +91,8 @@ void goHome(){
 
     my_class_ptr->rosPublishJointTrajectory(q_list);
     std::cout<<"Waiting for JointState"<<std::endl;
-     while(1){
-          int move_done =my_class_ptr->getMoveDone();
-                
-          if(move_done==1){
-                sleep(1);
-                break;
-          }
-        }
+     std::cout << "Press Enter Key if ready!" << std::endl;
+    std::cin.ignore();
     q_list.clear();
      std::cout<<"Recived JointState"<<std::endl;
 
@@ -282,10 +276,7 @@ std::vector<std::array<double,7>> doTaskPlanning(double* goal_values,double star
     return q_list;
     my_class_ptr->rosPublishJointTrajectory(q_list);
     std::system("clear");
-    std::cout<<"Waiting for JointState"<<std::endl;
-     std::cout << "Press Enter Key if ready!" << std::endl;
-    std::cin.ignore();
-    std::cout<<"Recived JointState"<<std::endl;
+
     q_list.clear();
 
 
@@ -465,7 +456,7 @@ signal(SIGINT, ctrlchandler);
    int toggle = 1;
 double task_goal_values00[7] ={targetPosition.at(0),targetPosition.at(1),targetPosition.at(2),targetPosition.at(3),targetPosition.at(4),targetPosition.at(5),targetPosition.at(6)};
 double task_goal_values11[7] ={targetPosition.at(0),targetPosition.at(1),targetPosition.at(2),targetPosition.at(3),targetPosition.at(4),-targetPosition.at(5),targetPosition.at(6)};
-       double start_values[7]={0.000 ,-0.785 ,0.000 ,-2.356, 0.000 ,1.571 ,1.585/2};
+      
         while(1){
         std::system("clear");
         int continue_value=0;
@@ -474,7 +465,7 @@ double task_goal_values11[7] ={targetPosition.at(0),targetPosition.at(1),targetP
 
         std::cout<<"Start Motion 1"<<std::endl;    
       my_class_ptr->isMove(1);
-	
+	double start_values[7]={0.000 ,-0.785 ,0.000 ,-2.356, 0.000 ,1.571 ,1.585/2};
        std::vector<std::array<double,7>> q_list1=doTaskPlanning(task_goal_values00,start_values);
        
        std::array<double,7> endq =  q_list1.at(q_list1.size()-1);
