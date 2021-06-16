@@ -170,7 +170,7 @@ GvlOmplPlannerHelper::GvlOmplPlannerHelper(const ob::SpaceInformationPtr &si)
     assert(stateSpace_ != nullptr);
 
     gvl = gpu_voxels::GpuVoxels::getInstance();
-    gvl->initialize(300, 300, 500, 0.01);
+  gvl->initialize(200,200, 200, 0.01);
 
     // We add maps with objects, to collide them
     gvl->addMap(MT_PROBAB_VOXELMAP,"myRobotMap");
@@ -593,7 +593,7 @@ tf = matrix;
 
   // Generate a GPU-Voxels instance:
   gvl = gpu_voxels::GpuVoxels::getInstance();
-  gvl->initialize(300,300, 500, 0.01);
+  gvl->initialize(150,150, 200, 0.01);
  
 
   //Vis Helper

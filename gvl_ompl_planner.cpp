@@ -90,6 +90,7 @@ void goHome(){
     q_list.push_back(end);
 
     my_class_ptr->rosPublishJointTrajectory(q_list);
+    std::cout<<"Waiting for JointState"<<std::endl;
      while(1){
           int move_done =my_class_ptr->getMoveDone();
                 
@@ -98,10 +99,15 @@ void goHome(){
           }
         }
     q_list.clear();
- 
+     std::cout<<"Recived JointState"<<std::endl;
+
+        double  temp_values_[7] = {0.000 ,-0.785 ,0.000 ,-2.356, 0.000 ,1.571 ,1.585/2};
+        double *temp_values= (double*)temp_values_;
+        my_class_ptr->rosPublishJointStates(temp_values);
+    	my_class_ptr->visualizeRobot(temp_values_);
 }
 
-void doTaskPlanning(double* goal_values){
+std::vector<std::array<double,7>> doTaskPlanning(double* goal_values,double start_values[7]){
 
 
     PERF_MON_INITIALIZE(100, 1000);
@@ -145,8 +151,8 @@ void doTaskPlanning(double* goal_values){
   
     //std::cout<<my_chain.getNrOfJoints()<<std::endl;
 
-    double start_values[7];
-    my_class_ptr->getJointStates(start_values);
+//    double start_values[7];
+//    my_class_ptr->getJointStates(start_values);
     q_init(0) = start_values[0];
     q_init(1) = start_values[1];
     q_init(2) = start_values[2];
@@ -220,7 +226,8 @@ void doTaskPlanning(double* goal_values){
 
     std::system("clear");
     ob::PathPtr path ;
-     while(succs<1)
+
+     while(succs<3)
     {
         try{
                 my_class_ptr->moveObstacle();
@@ -259,6 +266,7 @@ void doTaskPlanning(double* goal_values){
     solution->interpolate();
 
     int step_count = solution->getStateCount();
+
     std::vector<std::array<double,7>> q_list;
     q_list.clear();
     for(int i=0;i<step_count;i++){
@@ -266,11 +274,11 @@ void doTaskPlanning(double* goal_values){
         double *temp_values = (double*)values;
         std::array<double,7> temp_joints_value={{temp_values[0],temp_values[1],temp_values[2],temp_values[3],temp_values[4],temp_values[5],temp_values[6]}};
         q_list.push_back(temp_joints_value);
-        my_class_ptr->rosPublishJointStates(temp_values);
-    	my_class_ptr->visualizeRobot(values);
+        //my_class_ptr->rosPublishJointStates(temp_values);
+    	//my_class_ptr->visualizeRobot(values);
 	
      }
-
+    return q_list;
     my_class_ptr->rosPublishJointTrajectory(q_list);
     std::system("clear");
     std::cout<<"Waiting for JointState"<<std::endl;
@@ -468,22 +476,63 @@ signal(SIGINT, ctrlchandler);
         std::cout<<"Start Motion 1"<<std::endl;    
       my_class_ptr->isMove(1);
 	double task_goal_values00[7] ={targetPosition.at(0),targetPosition.at(1),targetPosition.at(2),targetPosition.at(3),targetPosition.at(4),targetPosition.at(5),targetPosition.at(6)};
-       doTaskPlanning(task_goal_values00);
-
+       double start_values[7]={0.000 ,-0.785 ,0.000 ,-2.356, 0.000 ,1.571 ,1.585/2};
+       std::vector<std::array<double,7>> q_list1=doTaskPlanning(task_goal_values00,start_values);
+       
+       std::array<double,7> endq =  q_list1.at(q_list1.size()-1);
+        for(int j =0;j<7;j++)
+             start_values[j]=endq[j];
        std::system("clear");
         std::cout<<"Start Motion 2"<<std::endl;
        double task_goal_values11[7] ={targetPosition.at(0),targetPosition.at(1),targetPosition.at(2),targetPosition.at(3),targetPosition.at(4),-targetPosition.at(5),targetPosition.at(6)};
-       doTaskPlanning(task_goal_values11);  
-       std::system("clear");
+       std::vector<std::array<double,7>> q_list2=doTaskPlanning(task_goal_values11,start_values);  
+       
+        endq =  q_list2.at(q_list2.size()-1);
+        for(int j =0;j<7;j++)
+             start_values[j]=endq[j];
+        std::system("clear");
         std::cout<<"Start Motion 3"<<std::endl;
-       doTaskPlanning(task_goal_values00);
-       double task_goal_values12[7] ={targetPosition.at(0),targetPosition.at(1),targetPosition.at(2),targetPosition.at(3),targetPosition.at(4),targetPosition.at(5),targetPosition.at(6)};
-
-
+       std::vector<std::array<double,7>> q_list3=doTaskPlanning(task_goal_values00,start_values);
        std::system("clear");
+
+            my_class_ptr->rosPublishJointTrajectory(q_list1);
+            std::system("clear");
+            std::cout<<"Waiting for JointState"<<std::endl;
+             while(1){
+                  int move_done =my_class_ptr->getMoveDone();
+                        
+                  if(move_done==1){
+                        break;
+                  }
+                }
+            std::cout<<"Recived JointState"<<std::endl;
+            q_list1.clear();
+            my_class_ptr->rosPublishJointTrajectory(q_list2);
+            std::system("clear");
+            std::cout<<"Waiting for JointState"<<std::endl;
+             while(1){
+                  int move_done =my_class_ptr->getMoveDone();
+                        
+                  if(move_done==1){
+                        break;
+                  }
+                }
+            std::cout<<"Recived JointState"<<std::endl;
+            q_list2.clear();                
+            my_class_ptr->rosPublishJointTrajectory(q_list3);
+            std::system("clear");
+            std::cout<<"Waiting for JointState"<<std::endl;
+             while(1){
+                  int move_done =my_class_ptr->getMoveDone();
+                        
+                  if(move_done==1){
+                        break;
+                  }
+                }
+            std::cout<<"Recived JointState"<<std::endl;
+            q_list3.clear();
+
         std::cout<<"Start Motion 4"<<std::endl;
-
-
       // double task_goal_values13[7] ={0.92395 ,-0.38252, 0 ,0 ,0.3, 0.0, 0.6};
       // doTaskPlanning(task_goal_values13);  
 
