@@ -495,6 +495,11 @@ signal(SIGINT, ctrlchandler);
        std::vector<std::array<double,7>> q_list3=doTaskPlanning(task_goal_values00,start_values);
        std::system("clear");
 
+
+
+        std::system("clear");
+        std::cout << "Calculation Complete. Press Enter Key if ready!" << std::endl;
+        std::cin.ignore();
             my_class_ptr->rosPublishJointTrajectory(q_list1);
             std::system("clear");
             std::cout<<"Waiting for JointState"<<std::endl;
